@@ -1,0 +1,42 @@
+scalar BigDecimal
+scalar LocalDateTime
+
+type Product {
+  id: ID!
+  name: String!
+  price: BigDecimal!
+  stock: Int!
+  status: ProductStatus!
+  createdAt: LocalDateTime!
+  updatedAt: LocalDateTime!
+}
+
+enum ProductStatus {
+  ON_SALE
+  SOLD_OUT
+  DISCONTINUED
+}
+
+input ProductCreateInput {
+  name: String!
+  price: BigDecimal!
+  stock: Int!
+}
+
+input ProductUpdateInput {
+  name: String
+  price: BigDecimal
+  stock: Int
+  status: ProductStatus
+}
+
+type Query {
+  product(id: ID!): Product
+  products(status: ProductStatus, page: Int = 0, size: Int = 20): [Product!]!
+}
+
+type Mutation {
+  createProduct(input: ProductCreateInput!): Boolean!
+  updateProduct(id: ID!, input: ProductUpdateInput!): Boolean!
+  deleteProduct(id: ID!): Boolean!
+}
