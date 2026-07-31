@@ -20,3 +20,13 @@
 ```bash
 ./gradlew bootRun
 ```
+
+## 테스트
+
+```bash
+# 전체 테스트
+./gradlew test
+
+# 모듈 경계 검증만 실행
+./gradlew test --tests "*ArchitectureTest"
+```
