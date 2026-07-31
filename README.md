@@ -21,6 +21,18 @@
 ./gradlew bootRun
 ```
 
+## GraphQL 스키마
+
+스키마 SDL은 [`src/main/resources/graphql/`](./src/main/resources/graphql)에 커밋되어 있습니다. 프론트엔드 개발자는 이 경로의 `.graphqls` 파일을 그대로 참고하면 됩니다 (코드 변경 시 항상 최신 상태 유지).
+
+서버를 띄운 상태에서 병합된 스키마를 텍스트로 받고 싶다면:
+
+```bash
+curl http://localhost:8080/graphql/schema
+```
+
+> 위 엔드포인트는 `application.yaml`에 `spring.graphql.schema.printer.enabled: true` 설정이 필요합니다 (기본 비활성화).
+
 ## 테스트
 
 ```bash
