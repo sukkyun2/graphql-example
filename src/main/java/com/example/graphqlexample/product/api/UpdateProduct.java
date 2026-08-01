@@ -2,6 +2,8 @@ package com.example.graphqlexample.product.api;
 
 import com.example.graphqlexample.product.application.ProductCommandService;
 import com.example.graphqlexample.product.domain.Product;
+import com.example.graphqlexample.product.domain.ProductStatus;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -20,4 +22,6 @@ class UpdateProduct {
         productCommandService.updateProduct(id, command);
         return true;
     }
+
+    record ProductUpdateInput(String name, BigDecimal price, Integer stock, ProductStatus status) {}
 }
