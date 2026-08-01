@@ -12,6 +12,7 @@ import com.example.graphqlexample.product.domain.ProductRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ProductCommandServiceTest {
@@ -26,6 +27,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @DisplayName("상품을 등록하면 저장소에 저장된다")
     void createProduct_savesNewProduct() {
         productCommandService.createProduct("keyboard", BigDecimal.valueOf(1000), 1);
 
@@ -33,6 +35,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @DisplayName("존재하는 상품을 수정하면 변경한 값만 반영된다")
     void updateProduct_whenFound_appliesPartialUpdate() {
         Product product = Product.create("keyboard", BigDecimal.valueOf(1000), 1);
         when(productRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(product));
@@ -44,6 +47,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 상품을 수정하려 하면 실패한다")
     void updateProduct_whenNotFound_throws() {
         when(productRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
 
@@ -53,6 +57,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @DisplayName("존재하는 상품을 삭제하면 삭제 처리된다")
     void deleteProduct_whenFound_marksDeleted() {
         Product product = Product.create("keyboard", BigDecimal.valueOf(1000), 1);
         when(productRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(product));
@@ -63,6 +68,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 상품을 삭제하려 하면 실패한다")
     void deleteProduct_whenNotFound_throws() {
         when(productRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
 

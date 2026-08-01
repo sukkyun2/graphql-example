@@ -123,6 +123,9 @@ query {
 
 - **Mock 대상**: Repository 인터페이스, `ApplicationEventPublisher` — 실제 DB/트랜잭션 없이 순수 로직만 검증
 - **Query/Command 분리 검증**: CommandService 테스트는 상태 변경과 이벤트 발행에, QueryService 테스트는 조회 결과와 N+1 방지(배치 호출 횟수)에 집중
+- **`@DisplayName` 작성 규칙**: 모든 테스트 메서드에 `@DisplayName`을 한글로 작성한다. 변수명·엔티티명을 그대로 노출하지 않고, 유저스토리처럼 실제 도메인 상황을 서술한다
+  - 나쁜 예: `상품 status가 SOLD_OUT이면 예외를 던진다`
+  - 좋은 예: `품절된 상품을 주문하면 주문이 거절된다`
 - **도구**: JUnit 5 + Mockito(`@ExtendWith(MockitoExtension.class)`), Spring 컨텍스트 로딩 없이 실행하여 속도 확보
 - GraphQL 통합 테스트([6번](#6-graphql-통합-테스트-요구사항))는 전체 흐름의 최종 검증 용도이며, 세부 분기/예외 케이스는 최대한 단위 테스트에서 커버한다
 

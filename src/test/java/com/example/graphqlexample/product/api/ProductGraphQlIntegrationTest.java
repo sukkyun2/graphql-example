@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.graphql.test.autoconfigure.tester.AutoConfigureGraphQlTester;
@@ -20,6 +21,7 @@ class ProductGraphQlIntegrationTest {
     private GraphQlTester graphQlTester;
 
     @Test
+    @DisplayName("상품을 등록하면 상품 목록 조회에 반영된다")
     void createProduct_thenProductsQueryReflectsIt() {
         createProduct("keyboard", 10000, 5);
 
@@ -34,6 +36,7 @@ class ProductGraphQlIntegrationTest {
     }
 
     @Test
+    @DisplayName("상품 정보를 일부만 수정하면 나머지는 그대로 유지된다")
     void updateProduct_partiallyUpdatesOnlyGivenFields() {
         createProduct("mouse", 5000, 3);
         String id = fetchProductsOnSale().get(0).id();
@@ -58,6 +61,7 @@ class ProductGraphQlIntegrationTest {
     }
 
     @Test
+    @DisplayName("상품을 삭제하면 이후 조회 시 찾을 수 없다")
     void deleteProduct_thenSubsequentQueryReturnsNotFound() {
         createProduct("monitor", 20000, 2);
         String id = fetchProductsOnSale().get(0).id();
@@ -88,6 +92,7 @@ class ProductGraphQlIntegrationTest {
     }
 
     @Test
+    @DisplayName("상품명 없이 등록을 시도하면 검증 오류가 발생한다")
     void createProduct_withBlankName_returnsValidationErrorCode() {
         graphQlTester.document("""
                 mutation {

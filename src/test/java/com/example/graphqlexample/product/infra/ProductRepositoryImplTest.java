@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -28,6 +29,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("상품명 키워드로 검색하면 대소문자를 구분하지 않고 조회된다")
     void search_filtersByNameKeywordCaseInsensitive() {
         jpaRepository.save(Product.create("Mechanical Keyboard", BigDecimal.valueOf(1000), 1));
         jpaRepository.save(Product.create("mouse", BigDecimal.valueOf(2000), 1));
@@ -39,6 +41,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("가격 범위로 검색하면 해당 범위의 상품만 조회된다")
     void search_filtersByPriceRange() {
         jpaRepository.save(Product.create("cheap", BigDecimal.valueOf(1000), 1));
         jpaRepository.save(Product.create("mid", BigDecimal.valueOf(5000), 1));
@@ -51,6 +54,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("등록일 범위로 검색하면 해당 기간에 등록된 상품만 조회된다")
     void search_filtersByCreatedAtRange() {
         Product old = jpaRepository.save(Product.create("old", BigDecimal.valueOf(1000), 1));
         setCreatedAt(old, LocalDateTime.now().minusDays(10));
@@ -65,6 +69,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("판매 상태와 다른 조건을 함께 검색하면 모든 조건을 만족하는 상품만 조회된다")
     void search_combinesStatusWithOtherFilters() {
         Product onSale = Product.create("keyboard-onsale", BigDecimal.valueOf(1000), 1);
         jpaRepository.save(onSale);
@@ -80,6 +85,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("조건 없이 검색해도 삭제된 상품은 제외된다")
     void search_withNoConditions_excludesSoftDeleted() {
         jpaRepository.save(Product.create("visible", BigDecimal.valueOf(1000), 1));
 

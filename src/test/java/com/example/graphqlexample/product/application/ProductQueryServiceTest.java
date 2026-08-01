@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ProductQueryServiceTest {
@@ -27,6 +28,7 @@ class ProductQueryServiceTest {
     }
 
     @Test
+    @DisplayName("존재하는 상품을 조회하면 해당 상품을 반환한다")
     void getProduct_whenFound_returnsProduct() {
         Product product = Product.create("keyboard", BigDecimal.valueOf(1000), 1);
         when(productRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(product));
@@ -35,6 +37,7 @@ class ProductQueryServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 상품을 조회하면 실패한다")
     void getProduct_whenNotFound_throws() {
         when(productRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
 
@@ -43,6 +46,7 @@ class ProductQueryServiceTest {
     }
 
     @Test
+    @DisplayName("조건에 맞는 상품 목록을 조회한다")
     void getProducts_delegatesToRepositorySearch() {
         Product product = Product.create("keyboard", BigDecimal.valueOf(1000), 1);
         var condition = new ProductSearchCondition(ProductStatus.ON_SALE, null, null, null, null, null);
