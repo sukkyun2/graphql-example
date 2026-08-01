@@ -1,5 +1,5 @@
 scalar BigDecimal
-scalar LocalDateTime
+scalar DateTime
 
 type Product {
   id: ID!
@@ -7,8 +7,8 @@ type Product {
   price: BigDecimal!
   stock: Int!
   status: ProductStatus!
-  createdAt: LocalDateTime!
-  updatedAt: LocalDateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 enum ProductStatus {
@@ -37,8 +37,8 @@ type Query {
     nameKeyword: String
     minPrice: BigDecimal
     maxPrice: BigDecimal
-    createdFrom: LocalDateTime
-    createdTo: LocalDateTime
+    createdFrom: DateTime
+    createdTo: DateTime
     page: Int = 0
     size: Int = 20
   ): [Product!]!

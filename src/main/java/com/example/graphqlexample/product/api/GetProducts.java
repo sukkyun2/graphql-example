@@ -5,7 +5,7 @@ import com.example.graphqlexample.product.application.ProductQueryService;
 import com.example.graphqlexample.product.domain.Product;
 import com.example.graphqlexample.product.domain.ProductStatus;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Arguments;
@@ -28,8 +28,8 @@ class GetProducts {
         String nameKeyword,
         BigDecimal minPrice,
         BigDecimal maxPrice,
-        LocalDateTime createdFrom,
-        LocalDateTime createdTo,
+        OffsetDateTime createdFrom,
+        OffsetDateTime createdTo,
         int page,
         int size
     ) {

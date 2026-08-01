@@ -2,8 +2,8 @@ type Order {
   id: ID!
   items: [OrderItem!]!
   status: OrderStatus!
-  createdAt: LocalDateTime!
-  updatedAt: LocalDateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type OrderItem {

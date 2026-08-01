@@ -9,7 +9,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ class ProductRepositoryImpl implements ProductRepository {
         long updated = queryFactory
             .update(product)
             .set(product.stock, product.stock.subtract(quantity))
-            .set(product.updatedAt, LocalDateTime.now())
+            .set(product.updatedAt, OffsetDateTime.now())
             .where(product.id.eq(productId), product.stock.goe(quantity), product.deletedAt.isNull())
             .execute();
         // Bulk UPDATE bypasses the persistence context, so any already-managed Product
@@ -62,7 +62,7 @@ class ProductRepositoryImpl implements ProductRepository {
         queryFactory
             .update(product)
             .set(product.stock, product.stock.add(quantity))
-            .set(product.updatedAt, LocalDateTime.now())
+            .set(product.updatedAt, OffsetDateTime.now())
             .where(product.id.eq(productId))
             .execute();
         entityManager.clear();
@@ -101,7 +101,7 @@ class ProductRepositoryImpl implements ProductRepository {
         return maxPrice != null ? product.price.loe(maxPrice) : null;
     }
 
-    private BooleanExpression createdAtBetween(LocalDateTime from, LocalDateTime to) {
+    private BooleanExpression createdAtBetween(OffsetDateTime from, OffsetDateTime to) {
         if (from != null && to != null) {
             return product.createdAt.between(from, to);
         }

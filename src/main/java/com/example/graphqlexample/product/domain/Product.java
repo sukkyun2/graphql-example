@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,9 +35,9 @@ public class Product {
 
     private LocalDateTime deletedAt;
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     private Product(String name, BigDecimal price, int stock) {
         validateName(name);
@@ -46,7 +47,7 @@ public class Product {
         this.price = price;
         this.stock = stock;
         this.status = ProductStatus.ON_SALE;
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
     }
@@ -80,7 +81,7 @@ public class Product {
     }
 
     private void touch() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
     }
 
     private static void validateName(String name) {

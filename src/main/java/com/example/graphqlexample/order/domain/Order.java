@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -38,9 +38,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     private Order(List<OrderItem> items) {
         if (CollectionUtils.isEmpty(items)) {
@@ -48,7 +48,7 @@ public class Order {
         }
         this.items = new ArrayList<>(items);
         this.status = OrderStatus.PENDING;
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
     }
@@ -62,6 +62,6 @@ public class Order {
             throw new InvalidOrderStatusTransitionException(status, target);
         }
         this.status = target;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
     }
 }

@@ -9,7 +9,7 @@ import com.example.graphqlexample.product.domain.ProductStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -69,12 +69,12 @@ class ProductRepositoryImplTest {
     @DisplayName("등록일 범위로 검색하면 해당 기간에 등록된 상품만 조회된다")
     void search_filtersByCreatedAtRange() {
         Product old = jpaRepository.save(Product.create("old", BigDecimal.valueOf(1000), 1));
-        setCreatedAt(old, LocalDateTime.now().minusDays(10));
+        setCreatedAt(old, OffsetDateTime.now().minusDays(10));
         jpaRepository.save(old);
 
         Product recent = jpaRepository.save(Product.create("recent", BigDecimal.valueOf(1000), 1));
 
-        var condition = new ProductSearchCondition(null, null, null, null, LocalDateTime.now().minusDays(1), null);
+        var condition = new ProductSearchCondition(null, null, null, null, OffsetDateTime.now().minusDays(1), null);
         var result = repository().search(condition, 0, 20);
 
         assertThat(result).extracting(Product::getName).containsExactly("recent");
@@ -196,7 +196,7 @@ class ProductRepositoryImplTest {
         }
     }
 
-    private static void setCreatedAt(Product product, LocalDateTime createdAt) {
+    private static void setCreatedAt(Product product, OffsetDateTime createdAt) {
         try {
             var field = Product.class.getDeclaredField("createdAt");
             field.setAccessible(true);
