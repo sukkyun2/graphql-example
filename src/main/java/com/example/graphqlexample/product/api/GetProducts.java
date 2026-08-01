@@ -20,17 +20,7 @@ class GetProducts {
 
     @QueryMapping
     List<Product> products(@Arguments SearchRequestRecord request) {
-        var criteria = new GetProductsCriteria(
-            request.status(),
-            request.nameKeyword(),
-            request.minPrice(),
-            request.maxPrice(),
-            request.createdFrom(),
-            request.createdTo(),
-            request.page(),
-            request.size()
-        );
-        return productQueryService.getProducts(criteria);
+        return productQueryService.getProducts(request.toCriteria());
     }
 
     record SearchRequestRecord(
@@ -42,5 +32,11 @@ class GetProducts {
         LocalDateTime createdTo,
         int page,
         int size
-    ) {}
+    ) {
+
+        GetProductsCriteria toCriteria() {
+            return new GetProductsCriteria(
+                status, nameKeyword, minPrice, maxPrice, createdFrom, createdTo, page, size);
+        }
+    }
 }

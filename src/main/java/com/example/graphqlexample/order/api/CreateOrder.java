@@ -16,13 +16,17 @@ class CreateOrder {
 
     @MutationMapping
     Order createOrder(@Argument OrderCreateInput input) {
-        var commands = input.items().stream()
-            .map(item -> new OrderCommandService.CreateOrderItemCommand(item.productId(), item.quantity()))
-            .toList();
-        return orderCommandService.createOrder(commands);
+        return orderCommandService.createOrder(input.toCommands());
     }
 
-    record OrderCreateInput(List<OrderItemInput> items) {}
+    record OrderCreateInput(List<OrderItemInput> items) {
+
+        List<OrderCommandService.CreateOrderItemCommand> toCommands() {
+            return items.stream()
+                .map(item -> new OrderCommandService.CreateOrderItemCommand(item.productId(), item.quantity()))
+                .toList();
+        }
+    }
 
     record OrderItemInput(Long productId, int quantity) {}
 }

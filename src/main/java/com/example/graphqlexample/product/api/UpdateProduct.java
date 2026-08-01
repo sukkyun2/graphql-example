@@ -17,11 +17,14 @@ class UpdateProduct {
 
     @MutationMapping
     boolean updateProduct(@Argument Long id, @Argument ProductUpdateInput input) {
-        var command = new Product.UpdateCommand(
-            input.name(), input.price(), input.stock(), input.status());
-        productCommandService.updateProduct(id, command);
+        productCommandService.updateProduct(id, input.toCommand());
         return true;
     }
 
-    record ProductUpdateInput(String name, BigDecimal price, Integer stock, ProductStatus status) {}
+    record ProductUpdateInput(String name, BigDecimal price, Integer stock, ProductStatus status) {
+
+        Product.UpdateCommand toCommand() {
+            return new Product.UpdateCommand(name, price, stock, status);
+        }
+    }
 }
