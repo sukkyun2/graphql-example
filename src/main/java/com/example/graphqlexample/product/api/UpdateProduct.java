@@ -12,13 +12,11 @@ import org.springframework.stereotype.Controller;
 class UpdateProduct {
 
     private final ProductCommandService productCommandService;
-    private final ProductStatusMapper productStatusMapper;
 
     @MutationMapping
     boolean updateProduct(@Argument Long id, @Argument ProductUpdateInput input) {
         var command = new Product.UpdateCommand(
-            input.name(), input.price(), input.stock(),
-            productStatusMapper.toDomain(input.status()));
+            input.name(), input.price(), input.stock(), input.status());
         productCommandService.updateProduct(id, command);
         return true;
     }

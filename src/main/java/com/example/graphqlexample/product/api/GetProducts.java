@@ -3,6 +3,7 @@ package com.example.graphqlexample.product.api;
 import com.example.graphqlexample.product.application.GetProductsCriteria;
 import com.example.graphqlexample.product.application.ProductQueryService;
 import com.example.graphqlexample.product.domain.Product;
+import com.example.graphqlexample.product.domain.ProductStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,12 +17,11 @@ import org.springframework.stereotype.Controller;
 class GetProducts {
 
     private final ProductQueryService productQueryService;
-    private final ProductStatusMapper productStatusMapper;
 
     @QueryMapping
     List<Product> products(@Arguments SearchRequestRecord request) {
         var criteria = new GetProductsCriteria(
-            productStatusMapper.toDomain(request.status()),
+            request.status(),
             request.nameKeyword(),
             request.minPrice(),
             request.maxPrice(),
@@ -34,7 +34,7 @@ class GetProducts {
     }
 
     record SearchRequestRecord(
-        String status,
+        ProductStatus status,
         String nameKeyword,
         BigDecimal minPrice,
         BigDecimal maxPrice,

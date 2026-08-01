@@ -62,7 +62,6 @@ enum OrderStatus {
 ```
 
 - **상태 전이 규칙 명시 필요**: 예) `PENDING → PAID → SHIPPING → COMPLETED`, `PENDING/PAID → CANCELLED`만 허용, 나머지는 예외 처리
-- **도메인 계층 enum vs GraphQL enum 매핑**: domain 모듈의 Java enum과 GraphQL SDL enum을 직접 매핑하지 않고, 별도 변환 계층(mapper)을 둔다
 - **DB 저장 방식**: `@Enumerated(EnumType.STRING)`으로 고정한다 (`ORDINAL` 사용 금지)
 
 ## 3. 도메인 이벤트 요구사항
