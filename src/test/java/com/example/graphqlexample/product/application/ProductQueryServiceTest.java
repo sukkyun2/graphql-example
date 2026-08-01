@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.example.graphqlexample.product.domain.Product;
 import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
+import com.example.graphqlexample.product.domain.ProductSearchCondition;
 import com.example.graphqlexample.product.domain.ProductStatus;
 import java.math.BigDecimal;
 import java.util.List;
@@ -45,9 +46,11 @@ class ProductQueryServiceTest {
     @Test
     void getProducts_delegatesToRepositorySearch() {
         Product product = Product.create("keyboard", BigDecimal.valueOf(1000), 1);
-        when(productRepository.search(ProductStatus.ON_SALE, 0, 20)).thenReturn(List.of(product));
+        var condition = new ProductSearchCondition(ProductStatus.ON_SALE, null, null, null, null, null);
+        when(productRepository.search(condition, 0, 20)).thenReturn(List.of(product));
 
-        var result = productQueryService.getProducts(new GetProductsCriteria(ProductStatus.ON_SALE, 0, 20));
+        var criteria = new GetProductsCriteria(ProductStatus.ON_SALE, null, null, null, null, null, 0, 20);
+        var result = productQueryService.getProducts(criteria);
 
         assertThat(result).containsExactly(product);
     }

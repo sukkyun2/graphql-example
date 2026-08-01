@@ -3,6 +3,7 @@ package com.example.graphqlexample.product.application;
 import com.example.graphqlexample.product.domain.Product;
 import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
+import com.example.graphqlexample.product.domain.ProductSearchCondition;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,14 @@ public class ProductQueryService {
     }
 
     public List<Product> getProducts(GetProductsCriteria criteria) {
-        return productRepository.search(criteria.status(), criteria.page(), criteria.size());
+        var condition = new ProductSearchCondition(
+            criteria.status(),
+            criteria.nameKeyword(),
+            criteria.minPrice(),
+            criteria.maxPrice(),
+            criteria.createdFrom(),
+            criteria.createdTo()
+        );
+        return productRepository.search(condition, criteria.page(), criteria.size());
     }
 }

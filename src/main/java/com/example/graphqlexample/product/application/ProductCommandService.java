@@ -5,6 +5,7 @@ import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,18 +17,22 @@ public class ProductCommandService {
     private final ProductRepository productRepository;
 
     public void createProduct(String name, BigDecimal price, int stock) {
-        productRepository.save(Product.create(name, price, stock));
+        Product product = Product.create(name, price, stock);
+        productRepository.save(product);
     }
 
     public void updateProduct(Long id, Product.UpdateCommand command) {
-        Product product = productRepository.findByIdAndDeletedAtIsNull(id)
-            .orElseThrow(() -> new ProductNotFoundException(id));
+        Product product = getProductInternal(id);
         product.update(command);
     }
 
     public void deleteProduct(Long id) {
-        Product product = productRepository.findByIdAndDeletedAtIsNull(id)
-            .orElseThrow(() -> new ProductNotFoundException(id));
+        Product product = getProductInternal(id);
         product.delete();
+    }
+
+    private Product getProductInternal(Long id) {
+        return productRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }

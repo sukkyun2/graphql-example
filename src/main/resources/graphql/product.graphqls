@@ -32,7 +32,16 @@ input ProductUpdateInput {
 
 type Query {
   product(id: ID!): Product
-  products(status: ProductStatus, page: Int = 0, size: Int = 20): [Product!]!
+  products(
+    status: ProductStatus
+    nameKeyword: String
+    minPrice: BigDecimal
+    maxPrice: BigDecimal
+    createdFrom: LocalDateTime
+    createdTo: LocalDateTime
+    page: Int = 0
+    size: Int = 20
+  ): [Product!]!
 }
 
 type Mutation {

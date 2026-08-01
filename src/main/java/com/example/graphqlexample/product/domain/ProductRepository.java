@@ -9,5 +9,5 @@ public interface ProductRepository {
 
     Optional<Product> findByIdAndDeletedAtIsNull(Long id);
 
-    List<Product> search(ProductStatus status, int page, int size);
+    List<Product> search(ProductSearchCondition condition, int page, int size);
 }
