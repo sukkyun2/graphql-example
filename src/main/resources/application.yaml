@@ -1,7 +1,11 @@
 spring:
   application:
     name: graphql-example
+  jpa:
+    defer-datasource-initialization: true
   graphql:
     schema:
       printer:
         enabled: true
+    graphiql:
+      enabled: true

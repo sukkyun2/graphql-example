@@ -7,6 +7,7 @@ import com.example.graphqlexample.product.domain.ProductStatus;
 import com.example.graphqlexample.product.domain.QProduct;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +23,7 @@ class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository jpaRepository;
     private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
 
     @Override
     public Product save(Product product) {
@@ -31,6 +33,39 @@ class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findByIdAndDeletedAtIsNull(Long id) {
         return jpaRepository.findByIdAndDeletedAtIsNull(id);
+    }
+
+    @Override
+    public List<Product> findAllByIdInAndDeletedAtIsNull(List<Long> ids) {
+        return queryFactory
+            .selectFrom(product)
+            .where(product.id.in(ids), product.deletedAt.isNull())
+            .fetch();
+    }
+
+    @Override
+    public long decreaseStockIfSufficient(Long productId, int quantity) {
+        long updated = queryFactory
+            .update(product)
+            .set(product.stock, product.stock.subtract(quantity))
+            .set(product.updatedAt, LocalDateTime.now())
+            .where(product.id.eq(productId), product.stock.goe(quantity), product.deletedAt.isNull())
+            .execute();
+        // Bulk UPDATE bypasses the persistence context, so any already-managed Product
+        // instance for this id would otherwise keep showing the pre-update stock value.
+        entityManager.clear();
+        return updated;
+    }
+
+    @Override
+    public void increaseStock(Long productId, int quantity) {
+        queryFactory
+            .update(product)
+            .set(product.stock, product.stock.add(quantity))
+            .set(product.updatedAt, LocalDateTime.now())
+            .where(product.id.eq(productId))
+            .execute();
+        entityManager.clear();
     }
 
     @Override

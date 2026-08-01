@@ -10,4 +10,10 @@ public interface ProductRepository {
     Optional<Product> findByIdAndDeletedAtIsNull(Long id);
 
     List<Product> search(ProductSearchCondition condition, int page, int size);
+
+    List<Product> findAllByIdInAndDeletedAtIsNull(List<Long> ids);
+
+    long decreaseStockIfSufficient(Long productId, int quantity);
+
+    void increaseStock(Long productId, int quantity);
 }

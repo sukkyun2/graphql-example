@@ -29,10 +29,22 @@ product/
 
 | 구분 | Query/Mutation | 설명 |
 |---|---|---|
-| Create | `createProduct(input: ProductCreateInput): Product` | 상품 등록, 초기 `ProductStatus = ON_SALE` |
-| Read | `product(id: ID!): Product`, `products(status: ProductStatus, page): [Product]` | 단건/목록 조회, enum 필터링 |
-| Update | `updateProduct(id: ID!, input: ProductUpdateInput): Product` | 가격/재고/상태 변경 |
-| Delete | `deleteProduct(id: ID!): Boolean` | soft delete (`deleted_at` 컬럼에 삭제 시각 기록, 실제 row는 유지) |
+| Create | `createProduct(input: ProductCreateInput!): Boolean!` | 상품 등록, 초기 `ProductStatus = ON_SALE` |
+| Read | `product(id: ID!): Product`, `products(status, nameKeyword, minPrice, maxPrice, createdFrom, createdTo, page, size): [Product!]!` | 단건 조회 / 동적 검색 목록 조회 (상태 + 상품명 키워드 + 가격 범위 + 생성일 범위 조합) |
+| Update | `updateProduct(id: ID!, input: ProductUpdateInput!): Boolean!` | 가격/재고/상태 부분 변경 |
+| Delete | `deleteProduct(id: ID!): Boolean!` | soft delete (`deleted_at` 컬럼에 삭제 시각 기록, 실제 row는 유지) |
+
+> **Mutation 반환 타입은 현재 전부 `Boolean!`.** 이건 확정된 컨벤션이 아니라 초기 구현 상태 그대로 둔 것 — Order 모듈 뮤테이션(`createOrder`, `cancelOrder` 등) 설계 전에 반환 타입 컨벤션을 먼저 정할 것. 참고할 만한 실제 사내 패턴 두 가지:
+> - **mario 스타일**: 엔티티당 `XxxMutationResponse { id: ID! }` 하나를 만들어 create/update/delete가 공유
+> - **mercury 스타일**: 단순 CUD는 `ID!`/`Boolean!`을 바로 반환, 식별자가 여러 개 필요할 때만 뮤테이션별 전용 Response 타입 생성
+>
+> 공통점은 둘 다 `void`는 쓰지 않는다는 것. Order는 처음부터 이 중 하나를 골라 일관되게 적용할 것 (지금 Product처럼 전부 `Boolean!`으로 시작했다가 나중에 되돌리는 건 피할 것).
+
+### Product 검색 조건 (동적 쿼리)
+
+- Product 검색은 QueryDSL로 구현한다. `product/domain`에 `ProductSearchCondition`(status/nameKeyword/minPrice/maxPrice/createdFrom/createdTo, 전부 nullable) record를 두고, `product/infra`의 `ProductRepositoryImpl`이 `JPAQueryFactory.where(...)`에 null-safe `BooleanExpression` 헬퍼들을 체이닝해 조건을 조합한다 (null 리턴 시 QueryDSL이 해당 조건을 자동 무시)
+- **page/size는 `ProductSearchCondition`에 포함하지 않는다** — 검색 조건(무엇을 찾을지)과 페이징(결과를 어떻게 자를지)은 관심사가 다르므로 `search(condition, page, size)`처럼 항상 별도 파라미터로 분리
+- Order도 목록 조회에 조건 조합이 필요해지면 (`orders(status, ...)` 확장 등) 같은 패턴(`OrderSearchCondition` + QueryDSL)을 따른다
 
 ### Order
 
@@ -63,6 +75,10 @@ enum OrderStatus {
 
 - **상태 전이 규칙 명시 필요**: 예) `PENDING → PAID → SHIPPING → COMPLETED`, `PENDING/PAID → CANCELLED`만 허용, 나머지는 예외 처리
 - **DB 저장 방식**: `@Enumerated(EnumType.STRING)`으로 고정한다 (`ORDINAL` 사용 금지)
+- **도메인 enum ↔ GraphQL SDL enum 매핑 — 현재 두 방식이 혼재, Order 시작 전 통일 필요**:
+  - `updateProduct`(mutation): `ProductStatusMapper.toDomain(String): ProductStatus`로 수동 변환 (SDL enum 값과 도메인 enum 상수 이름이 달라져도 안전)
+  - `products`(query): `SearchRequestRecord.status` 필드를 `ProductStatus`로 직접 선언해 Spring의 `StringToEnumConverterFactory`가 자동 변환 (코드는 없지만 SDL enum 값 = 도메인 enum 상수 이름이 영구히 고정됨)
+  - 실험적으로 query 쪽만 자동 변환으로 바꾼 상태. Order enum(`OrderStatus`) 설계 시에는 둘 중 하나로 통일할 것 — 도메인 enum이 API 계약과 독립적으로 진화해야 하면 매퍼 방식, 아니면 자동 변환으로 보일러플레이트 제거
 
 ## 3. 도메인 이벤트 요구사항
 
@@ -123,6 +139,7 @@ query {
 
 - **Mock 대상**: Repository 인터페이스, `ApplicationEventPublisher` — 실제 DB/트랜잭션 없이 순수 로직만 검증
 - **Query/Command 분리 검증**: CommandService 테스트는 상태 변경과 이벤트 발행에, QueryService 테스트는 조회 결과와 N+1 방지(배치 호출 횟수)에 집중
+- **리팩토링 내성 주의**: mock에 넘어가는 값 객체(예: 검색 조건 record)를 `when(repo.search(exactCondition, ...))`처럼 **정확히 일치**하는 값으로 stub하지 않는다. 이는 "서비스가 내부적으로 어떤 값을 조립하는지"라는 구현 디테일에 테스트가 결합돼, 동작 변화 없는 매핑 로직 리팩토링에도 테스트가 깨지는 원인이 된다 (실제로 `ProductQueryServiceTest`에서 이 패턴을 제거한 전례 있음). 대신 `ArgumentCaptor`로 의미 있는 필드만 검증하거나, 그 커버리지를 GraphQL 통합 테스트([6번](#6-graphql-통합-테스트-요구사항))로 옮긴다
 - **`@DisplayName` 작성 규칙**: 모든 테스트 메서드에 `@DisplayName`을 한글로 작성한다. 변수명·엔티티명을 그대로 노출하지 않고, 유저스토리처럼 실제 도메인 상황을 서술한다
   - 나쁜 예: `상품 status가 SOLD_OUT이면 예외를 던진다`
   - 좋은 예: `품절된 상품을 주문하면 주문이 거절된다`

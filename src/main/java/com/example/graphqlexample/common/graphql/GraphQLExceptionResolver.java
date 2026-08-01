@@ -1,7 +1,11 @@
 package com.example.graphqlexample.common.graphql;
 
-import com.example.graphqlexample.product.domain.InvalidProductArgumentException;
+import com.example.graphqlexample.order.application.OrderNotFoundException;
+import com.example.graphqlexample.order.domain.InvalidOrderArgumentException;
+import com.example.graphqlexample.order.domain.InvalidOrderStatusTransitionException;
+import com.example.graphqlexample.product.application.InsufficientStockException;
 import com.example.graphqlexample.product.application.ProductNotFoundException;
+import com.example.graphqlexample.product.domain.InvalidProductArgumentException;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;
@@ -20,6 +24,11 @@ class GraphQLExceptionResolver implements DataFetcherExceptionResolver {
         GraphQLError error = switch (exception) {
             case ProductNotFoundException e -> build(e, env, ErrorType.NOT_FOUND, "PRODUCT_NOT_FOUND");
             case InvalidProductArgumentException e -> build(e, env, ErrorType.BAD_REQUEST, "INVALID_PRODUCT_INPUT");
+            case OrderNotFoundException e -> build(e, env, ErrorType.NOT_FOUND, "ORDER_NOT_FOUND");
+            case InvalidOrderArgumentException e -> build(e, env, ErrorType.BAD_REQUEST, "INVALID_ORDER_INPUT");
+            case InvalidOrderStatusTransitionException e ->
+                build(e, env, ErrorType.BAD_REQUEST, "INVALID_ORDER_STATUS_TRANSITION");
+            case InsufficientStockException e -> build(e, env, ErrorType.BAD_REQUEST, "STOCK_INSUFFICIENT");
             default -> null;
         };
         return Mono.justOrEmpty(error).map(List::of);

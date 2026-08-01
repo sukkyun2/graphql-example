@@ -20,6 +20,10 @@ public class ProductQueryService {
             .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
+    public List<Product> findAllByIds(List<Long> ids) {
+        return productRepository.findAllByIdInAndDeletedAtIsNull(ids);
+    }
+
     public List<Product> getProducts(GetProductsCriteria criteria) {
         var condition = new ProductSearchCondition(
             criteria.status(),

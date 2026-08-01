@@ -1,0 +1,42 @@
+type Order {
+  id: ID!
+  items: [OrderItem!]!
+  status: OrderStatus!
+  createdAt: LocalDateTime!
+  updatedAt: LocalDateTime!
+}
+
+type OrderItem {
+  productId: ID!
+  product: Product
+  quantity: Int!
+  unitPrice: BigDecimal!
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPING
+  COMPLETED
+  CANCELLED
+}
+
+input OrderCreateInput {
+  items: [OrderItemInput!]!
+}
+
+input OrderItemInput {
+  productId: ID!
+  quantity: Int!
+}
+
+extend type Query {
+  order(id: ID!): Order
+  orders(status: OrderStatus): [Order!]!
+}
+
+extend type Mutation {
+  createOrder(input: OrderCreateInput!): Order!
+  updateOrderStatus(id: ID!, status: OrderStatus!): Order!
+  cancelOrder(id: ID!): Order!
+}

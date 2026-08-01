@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.example.graphqlexample.product.domain.Product;
 import com.example.graphqlexample.product.domain.ProductRepository;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -74,5 +75,33 @@ class ProductCommandServiceTest {
 
         assertThatThrownBy(() -> productCommandService.deleteProduct(1L))
             .isInstanceOf(ProductNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("재고가 충분하면 정상적으로 차감된다")
+    void decreaseStock_withSufficientStock_succeeds() {
+        when(productRepository.decreaseStockIfSufficient(1L, 2)).thenReturn(1L);
+
+        productCommandService.decreaseStock(List.of(new ProductCommandService.StockChange(1L, 2)));
+
+        verify(productRepository).decreaseStockIfSufficient(1L, 2);
+    }
+
+    @Test
+    @DisplayName("재고가 부족하면 재고 부족 예외가 발생한다")
+    void decreaseStock_withInsufficientStock_throws() {
+        when(productRepository.decreaseStockIfSufficient(1L, 100)).thenReturn(0L);
+
+        assertThatThrownBy(() -> productCommandService.decreaseStock(
+            List.of(new ProductCommandService.StockChange(1L, 100))))
+            .isInstanceOf(InsufficientStockException.class);
+    }
+
+    @Test
+    @DisplayName("취소된 주문의 재고가 복원된다")
+    void restoreStock_increasesStock() {
+        productCommandService.restoreStock(List.of(new ProductCommandService.StockChange(1L, 3)));
+
+        verify(productRepository).increaseStock(1L, 3);
     }
 }
