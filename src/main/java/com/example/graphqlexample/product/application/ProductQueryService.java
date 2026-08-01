@@ -1,7 +1,6 @@
 package com.example.graphqlexample.product.application;
 
 import com.example.graphqlexample.product.domain.Product;
-import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
 import com.example.graphqlexample.product.domain.ProductSearchCondition;
 import java.util.List;

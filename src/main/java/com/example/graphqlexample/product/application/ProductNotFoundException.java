@@ -1,4 +1,4 @@
-package com.example.graphqlexample.product.domain;
+package com.example.graphqlexample.product.application;
 
 public class ProductNotFoundException extends RuntimeException {
 

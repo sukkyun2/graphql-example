@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.graphqlexample.product.domain.Product;
-import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
 import java.math.BigDecimal;
 import java.util.Optional;

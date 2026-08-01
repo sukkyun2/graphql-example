@@ -1,7 +1,7 @@
 package com.example.graphqlexample.common.graphql;
 
 import com.example.graphqlexample.product.domain.InvalidProductArgumentException;
-import com.example.graphqlexample.product.domain.ProductNotFoundException;
+import com.example.graphqlexample.product.application.ProductNotFoundException;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;

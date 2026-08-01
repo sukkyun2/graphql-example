@@ -1,11 +1,9 @@
 package com.example.graphqlexample.product.application;
 
 import com.example.graphqlexample.product.domain.Product;
-import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

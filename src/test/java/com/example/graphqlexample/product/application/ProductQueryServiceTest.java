@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.example.graphqlexample.product.domain.Product;
-import com.example.graphqlexample.product.domain.ProductNotFoundException;
 import com.example.graphqlexample.product.domain.ProductRepository;
 import com.example.graphqlexample.product.domain.ProductSearchCondition;
 import com.example.graphqlexample.product.domain.ProductStatus;
